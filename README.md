@@ -51,4 +51,11 @@ Make sure to select CFLAG_OPTION in the Makefile to identify which test case is 
 
 ___
 
+## Directory: rtl
+
+This directory contains the RTL of cv32e40p RISC-V and includes the additional module for carry-less multiplication.
+
+___
+
+Other directories are for the environment setup.
    
