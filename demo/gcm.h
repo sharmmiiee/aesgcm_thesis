@@ -11,7 +11,7 @@ int aes_gcm_encrypt(const unsigned char  *key, size_t key_len, const unsigned ch
 
 int aes_gcm_decrypt(const unsigned char  *key, size_t key_len, const unsigned char  *iv, size_t iv_len,
 	       const unsigned char  *cipher, size_t cipher_len, const unsigned char  *aad_data, size_t aad_len, 
-	       const unsigned char  *tag, unsigned char  *plain);
+	       const unsigned char  *tag, unsigned char  *plain, unsigned char *validate_tag);
 		   
 void decrypt_cipher(void *aes, const unsigned char *counter, const unsigned char *cipher, size_t cipher_len, unsigned char *plain);
 
@@ -35,14 +35,23 @@ void gf_multiply(const unsigned char  *input, const unsigned char  *hashKey, uns
 void gf_mul_karatsuba( unsigned char  *x, const unsigned char  *y, unsigned char  *z);
 void karatsuba_custinstr( unsigned char  *x, const unsigned char  *y, unsigned char  *z);
 uint32_t reverse_input(uint32_t rs1, uint32_t rs2);
-uint32_t extract_uint32(const unsigned char *x, int offset);
+uint32_t extract_32bit(const unsigned char *x, int offset);
 void reverseBits(uint32_t *z);
-uint32_t mulHigh(uint32_t rs1, uint32_t rs2);
-uint32_t mulLow(uint32_t rs1, uint32_t rs2);
+uint32_t mulHigh(uint32_t operand1, uint32_t operand2);
+uint32_t mulLow(uint32_t operand1, uint32_t operand2);
 void print_hex(const unsigned char *data, size_t len);
 void shift_right_block(unsigned char  *v);
 void xor_block(unsigned char *dst, const unsigned char *src);
 void increment_counter(unsigned char  *block);
+
+void pair_multiplication_xor(
+	uint32_t high1, uint32_t low1, uint32_t high2, uint32_t low2,
+	uint32_t *res3, uint32_t *res2,uint32_t *res1, uint32_t *res0) ;
+void reduce(uint32_t *input, uint32_t  *res1, uint32_t  *res2);
+void mulReduction(uint32_t *r0, uint32_t *r1, uint32_t *r2, uint32_t *r3, uint32_t *r4, uint32_t *r5, uint32_t *r6, uint32_t *r7);
+
+void shiftReduction(uint32_t *r0, uint32_t *r1, uint32_t *r2, uint32_t *r3, uint32_t *r4, uint32_t *r5, uint32_t *r6, uint32_t *r7);
+
 
 static inline void AES_PUT_BE32( unsigned char *a, unsigned int val)
 {
@@ -51,3 +60,6 @@ static inline void AES_PUT_BE32( unsigned char *a, unsigned int val)
 	a[2] = (val >> 8) & 0xff;
 	a[3] = val & 0xff;
 }
+
+
+void nop_func(void);
