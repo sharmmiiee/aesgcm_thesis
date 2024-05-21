@@ -26,10 +26,10 @@
 //#define KARATSUBA_CUSTINSTR_ENABLED
 //#define MUL_INS_REDUCTION
 
-
 //*** 7. Karatsuba multiplication with mulch, mulcl and immediate instruction (+multiplication reduction) ***
 //#define KARATSUBA_CUSTINSTR_ENABLED
 //#define MUL_IMM_REDUCTION
+
 
 
 const uint8_t key1[]= {0x5b,0x96,0x04,0xfe,0x14,0xea,0xdb,0xa9,0x31,0xb0,0xcc,0xf3,0x48,0x43,0xda,0xb9};
@@ -42,7 +42,7 @@ int main(void)
 	//int encrypt_result, decrypt_result;
 	
 	
-	uint8_t cipher_buf[16], tag_buf[16],plain_buf[16];
+	uint8_t cipher_buf[16], tag_buf[16],plain_buf[16], validate_tag[16];
 
 	printf("\n\nplaintext: ");
 	for (int i = 0; i < 16; ++i)
@@ -67,9 +67,7 @@ int main(void)
 	printf("\n");
 
 	printf("\n.....................Decryption...................\n");
-        //decrypt_result = aes_gcm_decrypt(key1, sizeof(key1), iv1, sizeof(iv1), cipher_buf, sizeof(cipher_buf),
-        //                aad1, sizeof(aad1), tag_buf, plain_buf);
-        aes_gcm_decrypt(key1, sizeof(key1), iv1, sizeof(iv1), cipher_buf, sizeof(cipher_buf),                         aad1, sizeof(aad1), tag_buf, plain_buf);
+        aes_gcm_decrypt(key1, sizeof(key1), iv1, sizeof(iv1), cipher_buf, sizeof(cipher_buf),                         aad1, sizeof(aad1), tag_buf, plain_buf, validate_tag);
     
 	printf("plaintext decrypted: ");
 	for (int i = 0; i < 16; ++i)
@@ -81,7 +79,28 @@ int main(void)
         } else {
             printf("FAILED!!! Plaintext does not match the original.\n\n");
         }
-	
+
+        if(memcmp(tag_buf,validate_tag,sizeof(tag_buf))==0){
+	    printf("\n.....................Tag validation passed!...................\n");
+            printf("Tag generated: ");
+            for (int i = 0; i < 16; ++i)
+                printf("%02x ", tag_buf[i]);
+            printf("\n");
+            printf("Validated tag: ");
+            for (int i = 0; i < 16; ++i)
+                printf("%02x ", validate_tag[i]);
+            printf("\n\n");
+        }else{
+	    printf("\n.....................Tag validation failed!...................\n");
+            printf("Tag generated: ");
+            for (int i = 0; i < 16; ++i)
+                printf("%02x ", tag_buf[i]);
+            printf("\n");
+            printf("Validated tag: ");
+            for (int i = 0; i < 16; ++i)
+                printf("%02x ", validate_tag[i]);
+            printf("\n\n");
+        }	
 	
   
     return 0;

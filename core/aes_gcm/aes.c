@@ -3,13 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-typedef unsigned char uchar;	  // Define uchar to make it compatible with Snitch core
-typedef unsigned int  uint;	  // Define uint to make it compatible with Snitch core
+typedef unsigned char uchar;
+typedef unsigned int  uint;
 
-static int aes_tables_inited = 0; // Flag to determine if AES key expansion is initialized (0: tables are not initialized, 1: tables are intitialized)
+static int aes_tables_inited = 0;
 
-static uint32_t FSb[256];      // Forward substitution box (FSb)
-static uint32_t FT0[256];   // Forward key schedule assembly tables
+static uint32_t FSb[256];
+static uint32_t FT0[256];
 static uint32_t FT1[256];
 static uint32_t FT2[256];
 static uint32_t FT3[256];
@@ -34,10 +34,7 @@ int sbox[256] =   {
 	0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, //D
 	0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, //E
 	0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16 }; //F
-/* 
- * Platform Endianness Neutralizing Load and Store Macro definitions
- * AES wants platform-neutral Little Endian (LE) byte ordering
- */
+
 #define GET_UINT32_LE(n,b,i) {                  \
     (n) = ( (uint32_t) (b)[(i)    ]       )     \
         | ( (uint32_t) (b)[(i) + 1] <<  8 )     \
@@ -50,19 +47,12 @@ int sbox[256] =   {
     (b)[(i) + 2] = (uchar) ( (n) >> 16 );       \
     (b)[(i) + 3] = (uchar) ( (n) >> 24 ); }
 
-/*
- *  These macros improve the readability of the key
- *  generation initialization code by collapsing
- *  repetitive common operations into logical pieces.
- */
 #define ROTL8(x) ( ( x << 8 ) & 0xFFFFFFFF ) | ( x >> 24 )		// circular left shit. shifts x 8 bits to the left then 24 bits to the right. | forms the rotated value
 #define XTIME(x) ( ( x << 1 ) ^ ( ( x & 0x80 ) ? 0x1B : 0x00 ) )	// in GF(2^8) t\it multiplies x by 2. shift left and check if MSB is set
 
 void aes_init_keygen_tables(void) {
 
     int i, x, y, z;
-    //int pow[256];
-    //int log[256];
     
     if (aes_tables_inited) // If true, AES tables are initialized
         return;
@@ -126,7 +116,7 @@ int aes_key_expansion(uint32_t *RK, const uint8_t *key, uint keysize) {//before 
 
 uint32_t* aes_setkey(const uint8_t *key, const uint8_t keysize) {
 	
-    static uint32_t rk[AES_PRIV_SIZE / sizeof(uint32_t)]; // Static allocation
+    static uint32_t rk[AES_PRIV_SIZE / sizeof(uint32_t)];
     int res;
     aes_init_keygen_tables();
     res = aes_key_expansion(rk, key, keysize * 8);
@@ -188,7 +178,6 @@ void AddRoundKey(uint8_t state[4][4], uint32_t* RK) {
     }
 }
 
-//int aes_cipher(aes_context *ctx, const uint8_t input[16], uint8_t output[16]) {
 int aes_cipher(void  *ctx, const uint8_t input[16], uint8_t output[16]) {
 		
 	uint32_t *RK = ctx;
@@ -226,6 +215,6 @@ int aes_cipher(void  *ctx, const uint8_t input[16], uint8_t output[16]) {
 		}
 	}
 
-	return 0; //sharmine
+	return 0;
 }
 
